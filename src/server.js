@@ -1,4 +1,3 @@
-//works great
 
 const { MongoClient } = require('mongodb');
 const mongoURI = 'mongodb+srv://sawantankita0203:IOcrAqq9OAdxmc9T@cluster0.qv3jpok.mongodb.net/textdata?retryWrites=true&w=majority';
@@ -18,18 +17,18 @@ async function startServer() {
     const db = client.db('textdata');
     const collection = db.collection('text1');
    
-    // Endpoint to save the text
+    //Endpoint to save the text
     app.post('/api/saveText', (req, res) => {
       const { text } = req.body;
       
       // Insert the text into the collection
       collection.insertOne({ text })
         .then(() => {
-          res.status(200).json({ message: 'Text saved successfully' });
+          res.status(200).json({ message: 'server running successfully' });
         })
         .catch(error => {
           console.error('Error saving text:', error);
-          res.status(500).json({ message: 'Error saving text' });
+          res.status(500).json({ message: 'Error saving text, server issue' });
         });
     });
 

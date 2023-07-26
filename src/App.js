@@ -1,39 +1,48 @@
 import React, { useState } from "react";
 import axios from "axios";
 import 'quill/dist/quill.snow.css';
-import ReactQuill, { Quill } from "react-quill";
-import TextEditor, {modules,formats, handleProcedureContentChange } from "./TextEditor";
+import ReactQuill from "react-quill";
+import { modules, formats } from "./TextEditor";
+import FileUploadButton from './FileUploadButton';
 
 function App() {
   const [textContent, setTextContent] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const handleSaveButtonClick = () => {
-    // Send the content to the API endpoint
+    // Send the content and file to the API endpoint
+    const formData = new FormData();
+    formData.append("text", textContent);
+    if (selectedFile) {
+      formData.append("file", selectedFile);
+    }
+
     axios
-      .post("http://localhost:3000/api/saveText", { text: textContent })
+    .post("http://localhost:3000/api/saveText", { text: textContent })
       .then((response) => {
-        console.log("Text saved to MongoDB:", response.data);
+        console.log("Text and file saved to MongoDB:", response.data);  //works for both
         // Handle success or do something with the response
       })
       .catch((error) => {
-        console.error("Error saving text to MongoDB:", error);
+        console.error("Error saving text and file to MongoDB:", error);
         // Handle error
       });
   };
 
   const handleTextChange = (content) => {
     setTextContent(content);
-    handleProcedureContentChange(content); // Call your custom handler if needed
   };
+
 
   return (
     <div>
       <h1 style={{ textAlign: "center" }}>Text Editor In React JS</h1>
       <div>
+      <FileUploadButton/>
         <button
           onClick={handleSaveButtonClick}
           style={{
-            marginLeft: "200px",
+            marginLeft: "250px",
             padding: "0.5em 1em",
             fontSize: "0.9em",
             backgroundColor: "blue",
@@ -45,21 +54,23 @@ function App() {
         >
           Save
         </button>
+      
       </div>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <div style={{ flex: "1" }}>
           <ReactQuill
-            // ref={quillRef}
             theme="snow"
             placeholder="Write your content ..."
             value={textContent}
-            onChange={setTextContent}
+            onChange={handleTextChange}
             modules={modules}
             formats={formats}
           />
         </div>
+        <div>
+         
+        </div>
       </div>
-      
     </div>
   );
 }
